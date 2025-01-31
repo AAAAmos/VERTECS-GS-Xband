@@ -1,7 +1,0 @@
-python_program.zip
-python_program/image_check/DQ_check/*
-python_program/image_check/measurement/*
-python_program/image_check/optical/*
-python_program/image_check/raw_data/*
-python_program/*.Identifier
-.gitignore
