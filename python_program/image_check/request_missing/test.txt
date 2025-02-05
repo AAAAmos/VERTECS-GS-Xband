@@ -1,0 +1,15 @@
+--- 
+F20YYMMDDhhmmss.bin have missing packets. 
+Number of Missing Image Packets*: 100 
+Missing Image packets rate: {missing_rate_IM} 
+--- 
+F20YYMMDDhhmmss.bin have missing packets. 
+Number of Missing Image Packets*: 100 
+Missing Image packets rate: {missing_rate_IM} 
+--- 
+F20YYMMDDhhmmss.bin have no missing packets. 
+--- 
+F20YYMMDDhhmmss.bin have missing packets. 
+Number of Missing Image Packets*: 100 
+Missing Image packets rate: {missing_rate_IM} 
+
