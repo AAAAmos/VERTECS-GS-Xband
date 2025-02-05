@@ -1,3 +1,15 @@
+'''
+This script reads the raw data, checks completeness of the data, and the data quality.
+------Parameters------
+1. file_name: the name of the raw data file to be checked. If no input, the last file in the raw_data folder will be checked.
+2. mode: "detail" or no input for normal mode
+------Output------
+1. If mode is "detail", the script will output a txt file that contains the header information of the packets.
+2. If mode is "normal", the script will write the report to the last report file (.csv) in the report folder.:
+    - If there is no missing image packets, the script will save the image data to the optical folder.
+    - If there are missing image packets, the script will save the incomplete image data to the tmp folder.
+'''
+
 import glob
 import os
 import sys
@@ -6,6 +18,15 @@ import numpy as np
 import pandas as pd
 
 def find_consecutive_ranges(lst):
+    
+    '''
+    Find the consecutive ranges in a list of integers.
+    Input:
+        lst: a list of integers
+    Output:
+        ranges: a list of lists, each sublist contains the start and end of a consecutive range
+    '''
+    
     if not lst:
         return []
     
@@ -25,12 +46,14 @@ output_IM_folder_path = "./optical/"
 report_path = "./report/"
 os.makedirs(output_IM_folder_path,exist_ok=True)
 os.makedirs(report_path,exist_ok=True)
+# get the file name to be checked
 files = glob.glob('./raw_data/*.bin')
 files.sort()
 if len(sys.argv)<2:
     file_name = files[-1]
 else:
     file_name = f'./raw_data/{sys.argv[1]}'
+    
 reports = glob.glob('./report/*.csv')
 reports.sort()
 
@@ -135,22 +158,35 @@ try:
         fout.write(f'Segment of request HK packets: {missing_segment_HK}\n')
         fout.write(f'Request image packets rate (missing image/Image packet %): {missing_rate_IM}\n')
         fout.close()
+
     else:
         nfiles = len(glob.glob(output_IM_folder_path+'*.bin'))
         nfiles = str(nfiles).zfill(4)
-        # only save the image data if there is no missing image packets
+        imgData = bytes()
+        
         if missing_rate_IM == 0:
-            # no missing packets, save the image data
-            imgData = bytes()
             for k, packet in enumerate(mpduPackets):
                 if packet[28:30] == b'\x55\x40':
                     imgData += packet[56:-160]
             imgData = imgData.rstrip(b'\0')
+            # no missing packets, save the image data
             with open(f'./optical/opt_frame_{nfiles}_{file_name.split('/')[-1]}', 'wb') as f:
                 f.write(imgData)
+            # output the report
             with open(fout_name, 'a') as f:
                 f.write(f'{file_name.split('/')[-1]},IM,0,0,0\n')
         else:
+            # remove the bad quality image packets, and store the incomplete image packets
+            for k, packet in enumerate(mpduPackets):
+                if packet[28:30] == b'\x55\x40':
+                    # check data quality
+                    if packet[1] != '0':
+                        continue
+                    imgData += packet[56:-160]
+            imgData = imgData.rstrip(b'\0')
+            # save the incomplete image data
+            with open(f'./tmp/opt_frame_{nfiles}_{file_name.split('/')[-1]}', 'wb') as f:
+                f.write(imgData)
             # output the report for the missing packets
             with open(fout_name, 'a') as f:
                 for segment in missing_segment_IM:
@@ -159,6 +195,7 @@ try:
                     f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},-1\n')
 
 except Exception as e:
+    # report for unreadable files
     with open(fout_name, 'a') as f:
         f.write(f'{file_name.split('/')[-1]},Error,-1,-1,-1\n')
     # print(f'Error in {file_name}: {e}')
