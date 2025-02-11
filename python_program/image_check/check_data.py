@@ -1,7 +1,8 @@
 '''
 This script reads the raw data, checks completeness of the data, and the data quality.
 ------Parameters------
-1. file_name: the name of the raw data file to be checked. If no input, the last file in the raw_data folder will be checked.
+1. file_name: the name of the raw data file to be checked (full path). 
+    If no input, the last file in the raw_data folder will be checked.
 2. mode: "detail" or no input for normal mode
 ------Output------
 1. If mode is "detail", the script will output a txt file that contains the header information of the packets.
@@ -130,10 +131,10 @@ files.sort()
 if len(sys.argv)<2:
     file_name = files[-1]
 else:
-    file_name = f'./raw_data/{sys.argv[1]}'
+    file_name = sys.argv[1]
     
-reports = glob.glob('./report/*.csv')
-reports.sort()
+# reports = glob.glob('./report/*.csv')
+# reports.sort()
 
 VCDU_image = b'\x55\x40'
 VCDU_HK = b'\x40\x3F'
@@ -153,24 +154,33 @@ if (len(sys.argv)>2) and (sys.argv[2] == "detail"):
 else:
     print(f'Raw data file: {file_name}')
     # determine normal mode report file
-    if len(reports) == 0:
-        dt_now = datetime.datetime.now()
-        time_now = dt_now.strftime('%d_%H%M%S')
-        print('No report file found, create a new one.')
-        fout_name = f'{report_path}report_0000_{time_now}.csv'
+    if os.path.isfile('./report/un_gen.csv'):
+        fout_name = './report/un_gen.csv'
+    else:
+        fout_name = './report/un_gen.csv'
         with open(fout_name, 'w') as f:
             f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-    else:
-        fout_name = reports[-1]
-        if os.path.getsize(fout_name) > 1e7: # size limit of a report file is ~ 10MB
-            print('The last report file is too large, create a new one.')
-            dt_now = datetime.datetime.now()
-            time_now = dt_now.strftime('%d_%H%M%S')
-            fout_name = f'{report_path}report_{str(len(reports)).zfill(4)}_{time_now}.csv'
-            with open(fout_name, 'w') as f:
-                f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-        else:
-            print(f'Write to the last report file: {fout_name}')
+    print(f'Report file: {fout_name}')
+    
+    # if len(reports) == 0:
+    #     dt_now = datetime.datetime.now()
+    #     # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
+    #     time_now = dt_now.strftime('%Y%m%d%H%M%S')
+    #     print('No report file found, create a new one.')
+    #     fout_name = f'{report_path}report_0000_{time_now}.csv'
+    #     with open(fout_name, 'w') as f:
+    #         f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+    # else:
+    #     fout_name = reports[-1]
+    #     if os.path.getsize(fout_name) > 1e7: # size limit of a report file is ~ 10MB
+    #         print('The last report file is too large, create a new one.')
+    #         dt_now = datetime.datetime.now()
+    #         time_now = dt_now.strftime('%Y%m%d%H%M%S')
+    #         fout_name = f'{report_path}report_{str(len(reports)).zfill(4)}_{time_now}.csv'
+    #         with open(fout_name, 'w') as f:
+    #             f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+    #     else:
+    #         print(f'Write to the last report file: {fout_name}')
             
 headers = [[], [], [], []]
 hk = []
@@ -195,7 +205,12 @@ if (len(sys.argv)>2) and (sys.argv[2] == "detail"):
         )
     fout.write(f'Number of Packets: {len(mpduPackets)}\n')
     fout.close()
-    headerDF = pd.DataFrame(np.array(headers).T, columns=['VCDU', 'PSC', 'IB', 'DQ'])
+    headerDF = pd.DataFrame({
+        'VCDU': headers[0],
+        'PSC': pd.Series(headers[1], dtype=int),
+        'IB': headers[2],
+        'DQ': headers[3]
+    })
 else:
     headerDF = DF_raw_data(file_name)
 
