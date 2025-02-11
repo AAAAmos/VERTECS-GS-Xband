@@ -181,77 +181,84 @@ else:
             print(f'No tmp file found for {id}')
             continue
 
-for file_name in tmp_files:
+try:
+    for file_name in tmp_files:
 
-    print(f'Processing {file_name}')
-    tmp_data = DF_tmp_data(file_name)
+        print(f'Processing {file_name}')
+        tmp_data = DF_tmp_data(file_name)
 
-    IM_range = set(range(0, 16620))
-    HK_range = set(range(tmp_data[HK_mask]['PSC'].min(), tmp_data[HK_mask]['PSC'].max()+1)) # if the number of HK is fixed, please change the range 
+        IM_range = set(range(0, 16620))
+        HK_range = set(range(tmp_data[HK_mask]['PSC'].min(), tmp_data[HK_mask]['PSC'].max()+1)) # if the number of HK is fixed, please change the range 
 
-    # find the missing/bad-quality packets
-    missing_IM = IM_range - set(tmp_data[IM_mask(tmp_data)]['PSC'])
-    missing_HK = HK_range - set(tmp_data[HK_mask(tmp_data)]['PSC'])
-    requested_IM_PSC = requested_data[IM_mask(requested_data)&DQ_mask(requested_data)]['PSC'].isin(missing_IM)
-    requested_HK_PSC = requested_data[HK_mask(requested_data)&DQ_mask(requested_data)]['PSC'].isin(missing_HK)
-    requested_IM = requested_data[IM_mask(requested_data)&DQ_mask(requested_data)][requested_IM_PSC]
-    requested_HK = requested_data[HK_mask(requested_data)&DQ_mask(requested_data)][requested_HK_PSC]
-    # combine the data
-    combined_IM = pd.concat([tmp_data[IM_mask(tmp_data)], requested_IM[['VCDU', 'PSC', 'data']]]).sort_values(by='PSC')
-    combined_HK = pd.concat([tmp_data[HK_mask(tmp_data)], requested_HK[['VCDU', 'PSC', 'data']]]).sort_values(by='PSC')
-    missing_IM = IM_range - set(combined_IM['PSC'])
-    missing_HK = HK_range - set(combined_HK['PSC'])
-    missing_IM = sorted(list(missing_IM))
-    missing_HK = sorted(list(missing_HK))
+        # find the missing/bad-quality packets
+        missing_IM = IM_range - set(tmp_data[IM_mask(tmp_data)]['PSC'])
+        missing_HK = HK_range - set(tmp_data[HK_mask(tmp_data)]['PSC'])
+        requested_IM_PSC = requested_data[IM_mask(requested_data)&DQ_mask(requested_data)]['PSC'].isin(missing_IM)
+        requested_HK_PSC = requested_data[HK_mask(requested_data)&DQ_mask(requested_data)]['PSC'].isin(missing_HK)
+        requested_IM = requested_data[IM_mask(requested_data)&DQ_mask(requested_data)][requested_IM_PSC]
+        requested_HK = requested_data[HK_mask(requested_data)&DQ_mask(requested_data)][requested_HK_PSC]
+        # combine the data
+        combined_IM = pd.concat([tmp_data[IM_mask(tmp_data)], requested_IM[['VCDU', 'PSC', 'data']]]).sort_values(by='PSC')
+        combined_HK = pd.concat([tmp_data[HK_mask(tmp_data)], requested_HK[['VCDU', 'PSC', 'data']]]).sort_values(by='PSC')
+        missing_IM = IM_range - set(combined_IM['PSC'])
+        missing_HK = HK_range - set(combined_HK['PSC'])
+        missing_IM = sorted(list(missing_IM))
+        missing_HK = sorted(list(missing_HK))
 
-    # determine the report file
-    if os.path.isfile('./report/un_gen.csv'):
-        fout_name = './report/un_gen.csv'
-    else:
-        fout_name = './report/un_gen.csv'
-        with open(fout_name, 'w') as f:
-            f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-    print(f'Report file: {fout_name}')
-    
-    # report_path = "./report/"
-    # reports = glob.glob('./report/*.csv')
-    # reports.sort()
-    # fout_name = reports[-1]
-    # if os.path.getsize(fout_name) > 1e7: # size limit of a report file is ~ 10MB
-    #     print('The last report file is too large, create a new one.')
-    #     dt_now = datetime.datetime.now()
-    #     time_now = dt_now.strftime('%Y%m%d%H%M%S')
-    #     fout_name = f'{report_path}report_{str(len(reports)).zfill(4)}_{time_now}.csv'
-    #     with open(fout_name, 'w') as f:
-    #         f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-    # else:
-    #     print(f'Write to the last report file: {fout_name}')
+        # determine the report file
+        if os.path.isfile('./report/un_gen.csv'):
+            fout_name = './report/un_gen.csv'
+        else:
+            fout_name = './report/un_gen.csv'
+            with open(fout_name, 'w') as f:
+                f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+        print(f'Report file: {fout_name}')
+        
+        # report_path = "./report/"
+        # reports = glob.glob('./report/*.csv')
+        # reports.sort()
+        # fout_name = reports[-1]
+        # if os.path.getsize(fout_name) > 1e7: # size limit of a report file is ~ 10MB
+        #     print('The last report file is too large, create a new one.')
+        #     dt_now = datetime.datetime.now()
+        #     time_now = dt_now.strftime('%Y%m%d%H%M%S')
+        #     fout_name = f'{report_path}report_{str(len(reports)).zfill(4)}_{time_now}.csv'
+        #     with open(fout_name, 'w') as f:
+        #         f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+        # else:
+        #     print(f'Write to the last report file: {fout_name}')
 
-    # find the missing segments
-    missing_segment_IM = find_consecutive_ranges(list(missing_IM))
-    missing_segment_HK = find_consecutive_ranges(list(missing_HK))
-    if (len(missing_IM) == 0) and (len(missing_HK) == 0):
-        # no missing packets, save the image data
-        nfiles = len(glob.glob(output_IM_folder_path+'*.bin'))
-        nfiles = str(nfiles).zfill(4)
-        outfile = f'./optical/opt_frame_{nfiles}_{file_name.split("/")[-1][4:]}'  # output file name
-        # write the image data to the optical folder
-        encode_data(outfile, VCDU_image, combined_IM['PSC'], combined_IM['data'], 'wb')
-        # append the HK data to the optical folder
-        encode_data(outfile, VCDU_HK, combined_HK['PSC'], combined_HK['data'], 'ab')
-        # output the report
-        with open(fout_name, 'a') as f:
-            f.write(f'{file_name.split('/')[-1]},OK,0,0,0\n')
-    else:
-        outfile = f'./tmp/{file_name.split("/")[-1]}'
-        # store the incomplete image data. replace the original file
-        encode_data(outfile, VCDU_image, combined_IM['PSC'], combined_IM['data'], 'wb')
-        # append the incomplete HK data
-        encode_data(outfile, VCDU_HK, combined_HK['PSC'], combined_HK['data'], 'ab')
-        # output the report for the missing packets
-        with open(fout_name, 'a') as f:
-            for segment in missing_segment_IM:
-                f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{(len(missing_IM)/16621)*100}\n')
-            for segment in missing_segment_HK:
-                f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},-1\n')
+        # find the missing segments
+        missing_segment_IM = find_consecutive_ranges(list(missing_IM))
+        missing_segment_HK = find_consecutive_ranges(list(missing_HK))
+        if (len(missing_IM) == 0) and (len(missing_HK) == 0):
+            # no missing packets, save the image data
+            nfiles = len(glob.glob(output_IM_folder_path+'*.bin'))
+            nfiles = str(nfiles).zfill(4)
+            outfile = f'./optical/opt_frame_{nfiles}_{file_name.split("/")[-1][4:]}'  # output file name
+            # write the image data to the optical folder
+            encode_data(outfile, VCDU_image, combined_IM['PSC'], combined_IM['data'], 'wb')
+            # append the HK data to the optical folder
+            encode_data(outfile, VCDU_HK, combined_HK['PSC'], combined_HK['data'], 'ab')
+            # output the report
+            with open(fout_name, 'a') as f:
+                f.write(f'{file_name.split('/')[-1]},OK,0,0,0\n')
+            # os.system(f'rm {file_name}')
+        else:
+            outfile = f'./tmp/{file_name.split("/")[-1]}'
+            # store the incomplete image data. replace the original tmp file
+            encode_data(outfile, VCDU_image, combined_IM['PSC'], combined_IM['data'], 'wb')
+            # append the incomplete HK data
+            encode_data(outfile, VCDU_HK, combined_HK['PSC'], combined_HK['data'], 'ab')
+            # output the report for the missing packets
+            with open(fout_name, 'a') as f:
+                for segment in missing_segment_IM:
+                    f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{(len(missing_IM)/16621)*100}\n')
+                for segment in missing_segment_HK:
+                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},255\n')
+
+except Exception as e:
+    print(f"Error: {e}. Input file unknown.")
+             
+# os.system(f'rm {requested_file}')
                 
