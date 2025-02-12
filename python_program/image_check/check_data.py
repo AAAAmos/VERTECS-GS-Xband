@@ -275,10 +275,10 @@ try:
                 for segment in missing_segment_IM:
                     f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{missing_rate_IM}\n')
                 for segment in missing_segment_HK:
-                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},255\n')
+                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},101\n')
 
 except Exception as e:
     # report for unreadable files
     with open(fout_name, 'a') as f:
-        f.write(f'{file_name.split('/')[-1]},Error,255,255,255\n')
+        f.write(f'{file_name.split('/')[-1]},Error,65535,65535,100\n')
     # print(f'Error in {file_name}: {e}')

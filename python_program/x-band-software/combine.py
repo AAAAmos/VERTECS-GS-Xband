@@ -13,7 +13,6 @@ It reads the RMP files, identifies which ICs they belong to, and merges them wit
 import glob
 import os
 import sys
-import datetime
 import pandas as pd
 
 def DF_tmp_data(file_name):
@@ -176,7 +175,7 @@ else:
     incomplete_files = list(set(requested_data['ID'])) # assumption
     tmp_files = []
     for id in incomplete_files:
-        tmp_files.append(glob.glob(f'./tmp/tmp_F{id}*.bin')[0])
+        tmp_files.append(glob.glob(f'./tmp/tmp_*{id}*.bin')[0])
         if len(tmp_files) == 0:
             print(f'No tmp file found for {id}')
             continue
@@ -188,7 +187,10 @@ try:
         tmp_data = DF_tmp_data(file_name)
 
         IM_range = set(range(0, 16620))
-        HK_range = set(range(tmp_data[HK_mask]['PSC'].min(), tmp_data[HK_mask]['PSC'].max()+1)) # if the number of HK is fixed, please change the range 
+        try:
+            HK_range = set(range(tmp_data[HK_mask]['PSC'].min(), tmp_data[HK_mask]['PSC'].max()+1)) # if the number of HK is fixed, please change the range 
+        except:
+            HK_range = set(range(800, 8000))
 
         # find the missing/bad-quality packets
         missing_IM = IM_range - set(tmp_data[IM_mask(tmp_data)]['PSC'])
@@ -204,6 +206,8 @@ try:
         missing_HK = HK_range - set(combined_HK['PSC'])
         missing_IM = sorted(list(missing_IM))
         missing_HK = sorted(list(missing_HK))
+        missing_rate_IM = (len(missing_IM)/16621)*100
+        missing_rate_HK = (len(missing_HK)/8000)*100 # 8k is for testing, not real
 
         # determine the report file
         if os.path.isfile('./report/un_gen.csv'):
@@ -242,8 +246,8 @@ try:
             encode_data(outfile, VCDU_HK, combined_HK['PSC'], combined_HK['data'], 'ab')
             # output the report
             with open(fout_name, 'a') as f:
-                f.write(f'{file_name.split('/')[-1]},OK,0,0,0\n')
-            # os.system(f'rm {file_name}')
+                f.write(f'{file_name.split('/')[-1][4:]},OK,0,0,0\n')
+            os.system(f'rm {file_name}')
         else:
             outfile = f'./tmp/{file_name.split("/")[-1]}'
             # store the incomplete image data. replace the original tmp file
@@ -253,12 +257,12 @@ try:
             # output the report for the missing packets
             with open(fout_name, 'a') as f:
                 for segment in missing_segment_IM:
-                    f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{(len(missing_IM)/16621)*100}\n')
+                    f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
                 for segment in missing_segment_HK:
-                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},255\n')
+                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
 
 except Exception as e:
     print(f"Error: {e}. Input file unknown.")
-             
+
 # os.system(f'rm {requested_file}')
                 

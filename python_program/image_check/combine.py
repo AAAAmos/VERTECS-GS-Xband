@@ -255,7 +255,7 @@ try:
                 for segment in missing_segment_IM:
                     f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{(len(missing_IM)/16621)*100}\n')
                 for segment in missing_segment_HK:
-                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},255\n')
+                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},101\n')
 
 except Exception as e:
     print(f"Error: {e}. Input file unknown.")

@@ -229,6 +229,7 @@ try:
     missing_IM = sorted(list(missing_IM))
     missing_HK = sorted(list(missing_HK))
     missing_rate_IM = (len(missing_IM)/16621)*100
+    missing_rate_HK = (len(missing_HK)/8000)*100 # 8k is for testing, not real
     missing_segment_IM = find_consecutive_ranges(list(missing_IM))
     missing_segment_HK = find_consecutive_ranges(list(missing_HK))
     
@@ -273,12 +274,13 @@ try:
             # output the report for the missing packets
             with open(fout_name, 'a') as f:
                 for segment in missing_segment_IM:
-                    f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{missing_rate_IM}\n')
+                    f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
                 for segment in missing_segment_HK:
-                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},255\n')
+                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
 
 except Exception as e:
     # report for unreadable files
     with open(fout_name, 'a') as f:
-        f.write(f'{file_name.split('/')[-1]},Error,255,255,255\n')
+        f.write(f'{file_name.split('/')[-1]},Error,65535,65535,100\n')
+    # os.system(f'touch ./tmp/tmp_{file_name.split("/")[-1]}')
     # print(f'Error in {file_name}: {e}')

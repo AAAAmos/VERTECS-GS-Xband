@@ -1,0 +1,99 @@
+Processed raw files: set()
+Processed requested files: set()
+Processed image files: set()
+Processed raw files: set()
+Processed requested files: set()
+Processed image files: set()
+Processed raw files: set()
+Processed requested files: set()
+Processed image files: set()
+Call check_data for ./raw_data/C20250110163605.bin
+Raw data file: ./raw_data/C20250110163605.bin
+Report file: ./report/un_gen.csv
+Finished ./raw_data/C20250110163605.bin
+Processed raw files: {'C20250110163605.bin'}
+Processed requested files: set()
+Processed image files: set()
+Processed raw files: {'C20250110163605.bin'}
+Processed requested files: set()
+Processed image files: set()
+Call check_data for ./raw_data/F20250109124843.bin
+Raw data file: ./raw_data/F20250109124843.bin
+Report file: ./report/un_gen.csv
+Data write to ./tmp/tmp_F20250109124843.bin
+Data append to ./tmp/tmp_F20250109124843.bin
+Finished ./raw_data/F20250109124843.bin
+Call check_data for ./raw_data/F20250109125426.bin
+Raw data file: ./raw_data/F20250109125426.bin
+Report file: ./report/un_gen.csv
+Data write to ./tmp/tmp_F20250109125426.bin
+Data append to ./tmp/tmp_F20250109125426.bin
+Finished ./raw_data/F20250109125426.bin
+Processed raw files: {'F20250109125426.bin', 'F20250109124843.bin', 'C20250110163605.bin'}
+Processed requested files: set()
+Processed image files: set()
+Call check_data for ./raw_data/F20250109125804.bin
+Raw data file: ./raw_data/F20250109125804.bin
+Report file: ./report/un_gen.csv
+Data write to ./optical/opt_frame_0000_F20250109125804.bin
+Data append to ./optical/opt_frame_0000_F20250109125804.bin
+Finished ./raw_data/F20250109125804.bin
+Call check_data for ./raw_data/F20250109130351.bin
+Raw data file: ./raw_data/F20250109130351.bin
+Report file: ./report/un_gen.csv
+Data write to ./tmp/tmp_F20250109130351.bin
+Data append to ./tmp/tmp_F20250109130351.bin
+Finished ./raw_data/F20250109130351.bin
+Processed raw files: {'F20250109125426.bin', 'F20250109125804.bin', 'F20250109124843.bin', 'C20250110163605.bin', 'F20250109130351.bin'}
+Processed requested files: set()
+Processed image files: set()
+Call check_data for ./raw_data/F20250109155526.bin
+Raw data file: ./raw_data/F20250109155526.bin
+Report file: ./report/un_gen.csv
+Data write to ./tmp/tmp_F20250109155526.bin
+Data append to ./tmp/tmp_F20250109155526.bin
+Finished ./raw_data/F20250109155526.bin
+Call read_bin for ./optical/opt_frame_0000_F20250109125804.bin
+Finished read_bin
+Processed raw files: {'F20250109125426.bin', 'F20250109155526.bin', 'F20250109125804.bin', 'F20250109124843.bin', 'C20250110163605.bin', 'F20250109130351.bin'}
+Processed requested files: set()
+Processed image files: {'opt_frame_0000_F20250109125804.bin'}
+Call check_data for ./raw_data/F20250109155612.bin
+Raw data file: ./raw_data/F20250109155612.bin
+Report file: ./report/un_gen.csv
+Data write to ./optical/opt_frame_0001_F20250109155612.bin
+Data append to ./optical/opt_frame_0001_F20250109155612.bin
+Finished ./raw_data/F20250109155612.bin
+Processed raw files: {'F20250109125426.bin', 'F20250109155526.bin', 'F20250109125804.bin', 'F20250109124843.bin', 'F20250109155612.bin', 'C20250110163605.bin', 'F20250109130351.bin'}
+Processed requested files: set()
+Processed image files: {'opt_frame_0000_F20250109125804.bin'}
+Call combine for ./requested_data/F20250109155612.bin
+Processing ./tmp/tmp_F20250109125426.bin
+Report file: ./report/un_gen.csv
+Data write to ./optical/opt_frame_0002_F20250109125426.bin
+Data append to ./optical/opt_frame_0002_F20250109125426.bin
+Processing ./tmp/tmp_F20250109124843.bin
+Report file: ./report/un_gen.csv
+Data write to ./optical/opt_frame_0003_F20250109124843.bin
+Data append to ./optical/opt_frame_0003_F20250109124843.bin
+Processing ./tmp/tmp_F20250109130351.bin
+Report file: ./report/un_gen.csv
+Data write to ./optical/opt_frame_0004_F20250109130351.bin
+Data append to ./optical/opt_frame_0004_F20250109130351.bin
+Processing ./tmp/tmp_C20250110163605.bin
+Error: 'float' object cannot be interpreted as an integer. Input file unknown.
+Finished combine
+Call read_bin for ./optical/opt_frame_0001_F20250109155612.bin
+Finished read_bin
+Processed raw files: {'F20250109125426.bin', 'F20250109155526.bin', 'F20250109125804.bin', 'F20250109124843.bin', 'F20250109155612.bin', 'C20250110163605.bin', 'F20250109130351.bin'}
+Processed requested files: {'F20250109155612.bin'}
+Processed image files: {'opt_frame_0000_F20250109125804.bin', 'opt_frame_0001_F20250109155612.bin'}
+Call read_bin for ./optical/opt_frame_0002_F20250109125426.bin
+Finished read_bin
+Call read_bin for ./optical/opt_frame_0003_F20250109124843.bin
+Finished read_bin
+Call read_bin for ./optical/opt_frame_0004_F20250109130351.bin
+Finished read_bin
+Processed raw files: {'F20250109125426.bin', 'F20250109155526.bin', 'F20250109125804.bin', 'F20250109124843.bin', 'F20250109155612.bin', 'C20250110163605.bin', 'F20250109130351.bin'}
+Processed requested files: {'F20250109155612.bin'}
+Processed image files: {'opt_frame_0001_F20250109155612.bin', 'opt_frame_0003_F20250109124843.bin', 'opt_frame_0000_F20250109125804.bin', 'opt_frame_0004_F20250109130351.bin', 'opt_frame_0002_F20250109125426.bin'}

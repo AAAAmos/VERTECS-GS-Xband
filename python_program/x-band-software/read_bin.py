@@ -46,14 +46,22 @@ data_rs = data.rstrip(b'\0')
 data_array = np.frombuffer(data_rs,dtype=np.uint16)  #create a numpy array from object(such as bytes or bytearrays)
 image_data = data_array.reshape(3003,3008)
 
+#check if the length of data_array is 3003*3008
+# if len(data_array) == 3003*3008: 
+#     image_data = data_array.reshape(3003,3008)
+# else:
+#     data_nan = np.full(3003*3008,np.nan)   
+#     data_nan[:len(data_array)] = data_array
+#     image_data = data_nan   #if not, fill NaN into data_array until the total length is 3003*3008
+
 #write a text file
 a = ['1\n','2\n','3\n']
-f = open('/home/william/VERTECS/code/python_program/python_program/image_check/test.txt','w')
+f = open('./mock_header.txt','w')
 f.writelines(a)  #write line by line
 f.close()
 
 #read the text
-ff = open('/home/william/VERTECS/code/python_program/python_program/image_check/test.txt','r')
+ff = open('./mock_header.txt','r')
 information = ff.readlines()
 header_S = []
 for info in information:
@@ -71,4 +79,4 @@ file_name = file_name.split('/')[-1].split('.')[0]
 
 #if filename isn't a empty string
 if file_name != "":
-    hdu.writeto(f'./img/{file_name}_test.fits',overwrite=True)
+    hdu.writeto(f'./img/{file_name.split('_')[-1]}_test.fits', overwrite=True)
