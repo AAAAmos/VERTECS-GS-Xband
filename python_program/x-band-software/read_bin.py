@@ -79,4 +79,4 @@ file_name = file_name.split('/')[-1].split('.')[0]
 
 #if filename isn't a empty string
 if file_name != "":
-    hdu.writeto(f'./img/{file_name.split('_')[-1]}_test.fits', overwrite=True)
+    hdu.writeto(f'./img/{file_name.split("_")[-1]}_test.fits', overwrite=True)

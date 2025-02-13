@@ -1,0 +1,12 @@
+Checking F20250109155612.bin
+Finish checking F20250109155612.bin
+Reading opt_frame_0000_F20250109155612.bin
+Finished compiling image from opt_frame_0000_F20250109155612.bin
+Checking F20250109155526.bin
+Finish checking F20250109155526.bin
+Extract packets from F20250109155612.bin
+Finished extracting F20250109155612.bin
+Reading opt_frame_0000_F20250109155526.bin
+Finished compiling image from opt_frame_0000_F20250109155526.bin
+Checking C20250110163605.bin
+Error for checking ./raw_data/C20250110163605.bin: Command '['python3', './check_data.py', './raw_data/C20250110163605.bin']' returned non-zero exit status 1.

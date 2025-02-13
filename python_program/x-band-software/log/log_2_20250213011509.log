@@ -1,0 +1,43 @@
+Checking C20250110163605.bin
+Error for checking ./raw_data/C20250110163605.bin: Command '['python3', './check_data.py', './raw_data/C20250110163605.bin']' returned non-zero exit status 1.
+Checking F20250120132129.bin
+Error for checking ./raw_data/F20250120132129.bin: Command '['python3', './check_data.py', './raw_data/F20250120132129.bin']' returned non-zero exit status 1.
+Checking F20250109155526.bin
+Finish checking F20250109155526.bin
+Checking F20250109155612.bin
+Finish checking F20250109155612.bin
+Reading opt_frame_0000_F20250109155612.bin
+Finished compiling image from opt_frame_0000_F20250109155612.bin
+
+cut have problem
+final_check do not do to report
+
+Report file: ./report/un_gen.csv
+Report file: ./report/final_rep.csv
+Data write to ./optical/opt_frame_0000_F20250109155612.bin
+Data append to ./optical/opt_frame_0000_F20250109155612.bin
+Traceback (most recent call last):
+  File "/home/amos/VERTECS/python_program/x-band-software/./cmd_gen.py", line 201, in <module>
+    main()
+  File "/home/amos/VERTECS/python_program/x-band-software/./cmd_gen.py", line 49, in main
+    command_bin(folder_cmd_list_cur,folder_cmd_bin_cur)
+  File "/home/amos/VERTECS/python_program/x-band-software/./cmd_gen.py", line 63, in command_bin
+    list_packet_t = pd.read_csv(file_name, header=None).values.tolist()
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/amos/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1026, in read_csv
+    return _read(filepath_or_buffer, kwds)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/amos/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 620, in _read
+    parser = TextFileReader(filepath_or_buffer, **kwds)
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/amos/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1620, in __init__
+    self._engine = self._make_engine(f, self.engine)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/amos/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/readers.py", line 1898, in _make_engine
+    return mapping[engine](f, **self.options)
+           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "/home/amos/miniconda3/lib/python3.12/site-packages/pandas/io/parsers/c_parser_wrapper.py", line 93, in __init__
+    self._reader = parsers.TextReader(src, **kwds)
+                   ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+  File "parsers.pyx", line 581, in pandas._libs.parsers.TextReader.__cinit__
+pandas.errors.EmptyDataError: No columns to parse from file

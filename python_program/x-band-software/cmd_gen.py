@@ -38,13 +38,14 @@ def main():
     #NOTFIXED_END
 
     file_name = folder_decode_out + 'un_gen.csv'
-    list_packet_t = pd.read_csv(file_name).values.tolist() #csv /w header
-    if(len(list_packet_t)>0):
-        os.makedirs(folder_cmd_list_cur[:-1])
-        os.makedirs(folder_cmd_bin_cur[:-1])
-        command_order(folder_decode_out,folder_cmd_list_cur,N_request,N_id,rate_for_all,total_packet,now)
-        command_bin(folder_cmd_list_cur,folder_cmd_bin_cur)
-
+    try:
+        list_packet_t = pd.read_csv(file_name).values.tolist() #csv /w header
+    except:
+        return 0
+    os.makedirs(folder_cmd_list_cur[:-1])
+    os.makedirs(folder_cmd_bin_cur[:-1])
+    command_order(folder_decode_out,folder_cmd_list_cur,N_request,N_id,rate_for_all,total_packet,now)
+    command_bin(folder_cmd_list_cur,folder_cmd_bin_cur)
         
    
 #######################################################################
@@ -55,15 +56,16 @@ def command_bin(folder_list,folder_bin):
     #NOTFIXED_END
     files.sort()
     N_com = 0
-    for file_name in files:
-        with open(file_name, 'r') as f:
-            list_packet_t = pd.read_csv(file_name, header=None).values.tolist()
-        for lists in list_packet_t:
-            out_cmd_b = myenc.make_command(lists[0],lists[1],lists[2],lists[3])
-            with open(folder_bin + file_name[len(folder_list):-len('.csv')] + '_{0:05}.bin'.format(N_com) , 'wb')\
-                 as f:
-                f.write(out_cmd_b)
-                N_com += 1
+    if(len(files)>0):
+        for file_name in files:
+            with open(file_name, 'r') as f:
+                list_packet_t = pd.read_csv(file_name, header=None).values.tolist()
+            for lists in list_packet_t:
+                out_cmd_b = myenc.make_command(lists[0],lists[1],lists[2],lists[3])
+                with open(folder_bin + file_name[len(folder_list):-len('.csv')] + '_{0:05}.bin'.format(N_com) , 'wb')\
+                     as f:
+                    f.write(out_cmd_b)
+                    N_com += 1
 
     #generate command for delete
     #NOTFIXED_START                
@@ -71,14 +73,15 @@ def command_bin(folder_list,folder_bin):
     #NOTFIXED_END    
     files.sort()
     N_com = 0
-    for file_name in files:
-        with open(file_name, 'r') as f:
-            list_packet_t = pd.read_csv(file_name, header=None).values.tolist()
-        for lists in list_packet_t:
-            out_cmd_b = myenc.make_command(lists[0],lists[1],0,0) #command for delete file (not fixed yet?)
-            with open(folder_bin + file_name[len(folder_list):-len('.csv')] + '_{0:05}.bin'.format(N_com) , 'wb') \
-                 as f:
-                f.write(out_cmd_b)
+    if(len(files)>0):
+        for file_name in files:
+            with open(file_name, 'r') as f:
+                list_packet_t = pd.read_csv(file_name, header=None).values.tolist()
+            for lists in list_packet_t:
+                out_cmd_b = myenc.make_command(lists[0],lists[1],0,0) #command for delete file (not fixed yet?)
+                with open(folder_bin + file_name[len(folder_list):-len('.csv')] + '_{0:05}.bin'.format(N_com) , 'wb') \
+                     as f:
+                    f.write(out_cmd_b)
 
 #######################################################################
 def command_order(fol_dout,fol_lis,N_req,N_id,rate_for_all,total_packet,now):
@@ -196,5 +199,3 @@ def add_csv(file_name, new_data):
 #######################################################################
 if __name__ == "__main__":
     main()
-
-    

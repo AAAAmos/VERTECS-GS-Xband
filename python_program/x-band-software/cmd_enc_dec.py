@@ -39,7 +39,7 @@ def make_command(file_name,name,id_start,id_end):
     else:
         print('ERROR: unknown label')
         print(name)
-        sys.exit()
+        sys.exit(2)
         
     return out_date + out_name + out_ids
 

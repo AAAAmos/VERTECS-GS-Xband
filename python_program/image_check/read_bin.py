@@ -1,6 +1,5 @@
+import sys
 import numpy as np
-import matplotlib.pyplot as plt
-import glob
 from astropy.io import fits
 import pandas as pd
 
@@ -31,7 +30,8 @@ def DF_tmp_data(file_name):
     
     return headerDF
     
-file_name = './optical/opt_frame_0005_F20250109155612.bin'
+# file_name = './optical/opt_frame_0005_F20250109155612.bin'
+file_name = sys.argv[1]
 DF = DF_tmp_data(file_name)
 
 IM = DF[DF['VCDU']=='IM']
@@ -48,12 +48,12 @@ image_data = data_array.reshape(3003,3008)
 
 #write a text file
 a = ['1\n','2\n','3\n']
-f = open('/home/william/VERTECS/code/python_program/python_program/image_check/test.txt','w')
+f = open('./mock_header.txt','w')
 f.writelines(a)  #write line by line
 f.close()
 
 #read the text
-ff = open('/home/william/VERTECS/code/python_program/python_program/image_check/test.txt','r')
+ff = open('./mock_header.txt','r')
 information = ff.readlines()
 header_S = []
 for info in information:
@@ -71,4 +71,4 @@ file_name = file_name.split('/')[-1].split('.')[0]
 
 #if filename isn't a empty string
 if file_name != "":
-    hdu.writeto(f'./img/{file_name}_test.fits',overwrite=True)
+    hdu.writeto(f'./img/{file_name.split('_')[-1]}_test.fits', overwrite=True)

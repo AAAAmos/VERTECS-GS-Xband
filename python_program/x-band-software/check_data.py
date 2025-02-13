@@ -146,21 +146,28 @@ with open(file_name, 'rb') as f:
 # create a output file if needed
 if (len(sys.argv)>2) and (sys.argv[2] == "detail"):
     # output file that contains the header information of the packets
-    # fout_name = f'./DQ_check/{'/'.join(file_name.split('/')[2:])}'
-    fout_name = f'./{file_name.split('/')[-1]}'
+    fout_name = f'./{file_name.split("/")[-1]}'
     fout_name = fout_name.replace('.bin', '_header.txt')
     print(f'Detail output: {fout_name}')
     fout = open(fout_name, 'w')
 else:
-    print(f'Raw data file: {file_name}')
+    # print(f'Raw data file: {file_name}')
     # determine normal mode report file
     if os.path.isfile('./report/un_gen.csv'):
-        fout_name = './report/un_gen.csv'
+        fout_name_incpl = './report/un_gen.csv'
     else:
-        fout_name = './report/un_gen.csv'
-        with open(fout_name, 'w') as f:
+        fout_name_incpl = './report/un_gen.csv'
+        with open(fout_name_incpl, 'w') as f:
             f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-    print(f'Report file: {fout_name}')
+    print(f'Report file: {fout_name_incpl}')
+    if os.path.isfile('./report/final_check.csv'):
+        fout_name_cpl = './report/final_check.csv'
+    else:
+        fout_name_cpl = './report/final_check.csv'
+        with open(fout_name_cpl, 'w') as f:
+            f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+    print(f'Report file: {fout_name_cpl}')
+    # print(f'Report file: {fout_name}')
     
     # if len(reports) == 0:
     #     dt_now = datetime.datetime.now()
@@ -236,8 +243,8 @@ try:
     # output the report
     if (len(sys.argv)>2) and (sys.argv[2] == "detail"):
         fout = open(fout_name, 'a')
-        fout.write(f'Total Image Packets: {headerDF[headerDF['VCDU'] == 'IM'].shape[0]}\n')
-        fout.write(f'UnClassified Packets: {headerDF[headerDF['VCDU'] == 'UnClassified'].shape[0]}\n')
+        fout.write(f'Total Image Packets: {headerDF[headerDF["VCDU"] == "IM"].shape[0]}\n')
+        fout.write(f'UnClassified Packets: {headerDF[headerDF["VCDU"] == "UnClassified"].shape[0]}\n')
         fout.write(f'Sequence number of Missing Image Packets: {missing_IM}\n')
         fout.write(f'Number of Missing Image Packets: {len(missing_IM)}\n')
         fout.write(f'Sequence number of Missing HK Packets: {missing_HK}\n')
@@ -263,8 +270,8 @@ try:
             # append the HK data to the optical folder
             encode_data(outfile, VCDU_HK, headerDF[HK_mask(headerDF)]['PSC'], headerDF[HK_mask(headerDF)]['data'], 'ab')
             # output the report
-            with open(fout_name, 'a') as f:
-                f.write(f'{file_name.split('/')[-1]},OK,0,0,0\n')
+            with open(fout_name_cpl, 'a') as f:
+                f.write(f'{file_name.split("/")[-1]},OK,0,0,0\n')
         else:
             outfile = f'./tmp/tmp_{file_name.split("/")[-1]}'
             # store the incomplete image data
@@ -272,15 +279,16 @@ try:
             # append the incomplete HK data
             encode_data(outfile, VCDU_HK, headerDF[HK_mask(headerDF)]['PSC'], headerDF[HK_mask(headerDF)]['data'], 'ab')
             # output the report for the missing packets
-            with open(fout_name, 'a') as f:
+            with open(fout_name_incpl, 'a') as f:
                 for segment in missing_segment_IM:
-                    f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
+                    f.write(f'{file_name.split("/")[-1]},IM,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
                 for segment in missing_segment_HK:
-                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
+                    f.write(f'{file_name.split("/")[-1]},HK,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
 
 except Exception as e:
     # report for unreadable files
-    with open(fout_name, 'a') as f:
-        f.write(f'{file_name.split('/')[-1]},Error,65535,65535,100\n')
+    with open(fout_name_incpl, 'a') as f:
+        f.write(f'{file_name.split("/")[-1]},Error,65535,65535,100\n')
     # os.system(f'touch ./tmp/tmp_{file_name.split("/")[-1]}')
     # print(f'Error in {file_name}: {e}')
+    sys.exit(1)

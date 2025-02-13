@@ -211,26 +211,19 @@ try:
 
         # determine the report file
         if os.path.isfile('./report/un_gen.csv'):
-            fout_name = './report/un_gen.csv'
+            fout_name_incpl = './report/un_gen.csv'
         else:
-            fout_name = './report/un_gen.csv'
-            with open(fout_name, 'w') as f:
+            fout_name_incpl = './report/un_gen.csv'
+            with open(fout_name_incpl, 'w') as f:
                 f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-        print(f'Report file: {fout_name}')
-        
-        # report_path = "./report/"
-        # reports = glob.glob('./report/*.csv')
-        # reports.sort()
-        # fout_name = reports[-1]
-        # if os.path.getsize(fout_name) > 1e7: # size limit of a report file is ~ 10MB
-        #     print('The last report file is too large, create a new one.')
-        #     dt_now = datetime.datetime.now()
-        #     time_now = dt_now.strftime('%Y%m%d%H%M%S')
-        #     fout_name = f'{report_path}report_{str(len(reports)).zfill(4)}_{time_now}.csv'
-        #     with open(fout_name, 'w') as f:
-        #         f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-        # else:
-        #     print(f'Write to the last report file: {fout_name}')
+        print(f'Report file: {fout_name_incpl}')
+        if os.path.isfile('./report/final_check.csv'):
+            fout_name_cpl = './report/final_check.csv'
+        else:
+            fout_name_cpl = './report/final_check.csv'
+            with open(fout_name_cpl, 'w') as f:
+                f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+        print(f'Report file: {fout_name_cpl}')
 
         # find the missing segments
         missing_segment_IM = find_consecutive_ranges(list(missing_IM))
@@ -245,8 +238,8 @@ try:
             # append the HK data to the optical folder
             encode_data(outfile, VCDU_HK, combined_HK['PSC'], combined_HK['data'], 'ab')
             # output the report
-            with open(fout_name, 'a') as f:
-                f.write(f'{file_name.split('/')[-1][4:]},OK,0,0,0\n')
+            with open(fout_name_cpl, 'a') as f:
+                f.write(f'{file_name.split("/")[-1][4:]},OK,0,0,0\n')
             os.system(f'rm {file_name}')
         else:
             outfile = f'./tmp/{file_name.split("/")[-1]}'
@@ -255,14 +248,14 @@ try:
             # append the incomplete HK data
             encode_data(outfile, VCDU_HK, combined_HK['PSC'], combined_HK['data'], 'ab')
             # output the report for the missing packets
-            with open(fout_name, 'a') as f:
+            with open(fout_name_incpl, 'a') as f:
                 for segment in missing_segment_IM:
-                    f.write(f'{file_name.split('/')[-1]},IM,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
+                    f.write(f'{file_name.split("/")[-1]},IM,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
                 for segment in missing_segment_HK:
-                    f.write(f'{file_name.split('/')[-1]},HK,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
+                    f.write(f'{file_name.split("/")[-1]},HK,{segment[0]},{segment[1]},{missing_rate_IM+missing_rate_HK}\n')
 
 except Exception as e:
-    print(f"Error: {e}. Input file unknown.")
+    # print(f"Error: {e}. Input file unknown.")
+    sys.exit(3)
 
-# os.system(f'rm {requested_file}')
                 

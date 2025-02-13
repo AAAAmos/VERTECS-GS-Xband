@@ -1,0 +1,10 @@
+Checking C20250110163605.bin
+Error for checking ./raw_data/C20250110163605.bin: Command '['python3', './check_data.py', './raw_data/C20250110163605.bin']' returned non-zero exit status 1.
+Checking F20250109130351.bin
+Finish checking F20250109130351.bin
+Combining F20250109155612.bin
+Finished combining F20250109155612.bin
+Reading opt_frame_0000_F20250109130351.bin
+Finished compiling image from opt_frame_0000_F20250109130351.bin
+Reading opt_frame_0001_F20250109155526.bin
+Finished compiling image from opt_frame_0001_F20250109155526.bin
