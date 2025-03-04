@@ -43,8 +43,11 @@ data = bytes()
 for i in range(len(IM)):
     data += DATA[i]
 data_rs = data.rstrip(b'\0')
-data_array = np.frombuffer(data_rs,dtype=np.uint16)  #create a numpy array from object(such as bytes or bytearrays)
-image_data = data_array.reshape(3003,3008)
+try:
+    data_array = np.frombuffer(data_rs,dtype=np.uint16)  #create a numpy array from object(such as bytes or bytearrays)
+    image_data = data_array.reshape(3003,3008)
+except Exception as e:
+    sys.exit(4)
 
 #check if the length of data_array is 3003*3008
 # if len(data_array) == 3003*3008: 

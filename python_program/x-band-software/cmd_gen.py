@@ -59,7 +59,7 @@ def command_bin(folder_list,folder_bin):
     if(len(files)>0):
         for file_name in files:
             with open(file_name, 'r') as f:
-                list_packet_t = pd.read_csv(file_name, header=None).values.tolist()
+                list_packet_t = pd.read_csv(file_name).values.tolist()
             for lists in list_packet_t:
                 out_cmd_b = myenc.make_command(lists[0],lists[1],lists[2],lists[3])
                 with open(folder_bin + file_name[len(folder_list):-len('.csv')] + '_{0:05}.bin'.format(N_com) , 'wb')\
@@ -76,7 +76,7 @@ def command_bin(folder_list,folder_bin):
     if(len(files)>0):
         for file_name in files:
             with open(file_name, 'r') as f:
-                list_packet_t = pd.read_csv(file_name, header=None).values.tolist()
+                list_packet_t = pd.read_csv(file_name).values.tolist()
             for lists in list_packet_t:
                 out_cmd_b = myenc.make_command(lists[0],lists[1],0,0) #command for delete file (not fixed yet?)
                 with open(folder_bin + file_name[len(folder_list):-len('.csv')] + '_{0:05}.bin'.format(N_com) , 'wb') \
@@ -184,6 +184,7 @@ def save_to_csv(folder_name,n_c,data):
     #filename = folder_name + f'{now_t:%Y%m%d%H%M%S}' + '_{0:05}.csv'.format(n_c)
     filename = folder_name + '_{0:05}.csv'.format(n_c)
     with open(filename, mode='w', newline='') as file:
+        file.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
         writer = csv.writer(file)
         writer.writerows(data)   
                 
@@ -193,7 +194,7 @@ def add_csv(file_name, new_data):
         df.append(new_data)
     except FileNotFoundError:
         df = new_data
-    with open(file_name, mode = 'w', newline = '') as file:
+    with open(file_name, mode = 'a', newline = '') as file:
         writer = csv.writer(file)
         writer.writerows(new_data)
 #######################################################################

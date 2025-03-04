@@ -28,6 +28,9 @@ os.system(f"touch {log_file}")
 fout_name_cpl = './report/final_check.csv'
 with open(fout_name_cpl, 'w') as f:
     f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+final_report = './report/report.csv'
+with open(final_report, 'w') as f:
+    f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
 
 while True:
     
@@ -64,6 +67,7 @@ while True:
         except Exception as e:
             with open(log_file, "a") as f:
                 f.write(f"Error for checking {file_path}: {e}\n")
+                f.write(f"Delete {file}, request again.\n")
             os.system(f'rm {raw_data_folder}{file}')
             continue
             
@@ -84,6 +88,7 @@ while True:
         except Exception as e:
             with open(log_file, "a") as f:
                 f.write(f"Error for extracting {file_path}: {e}\n")
+                f.write(f"Delete {file}.\n")
             os.system(f'rm {new_req_files}{file}')
             continue
         
@@ -129,20 +134,25 @@ while True:
             with open('./report/final_check.csv', 'w') as f1:
                 f1.writelines(new_lines)
             
+            with open(log_file, "a") as f:
+                f.write(f"Delete {file}, request again.\n")
             os.system(f'rm {img_data_folder}{file}')
                 
             continue
 
-    # print(f"Processed raw files: {processed_raw_files}")
-    # print(f"Processed requested files: {processed_req_files}")
-    # print(f"Processed image files: {processed_img_files}")
     time.sleep(3)  # Check for new files every x seconds
     
     for file in processed_raw_files:
-        os.system(f'rm {raw_data_folder}{file}')
+        with open(log_file, "a") as f:
+            f.write(f"Move {file} to archive\n")
+        os.system(f'mv {raw_data_folder}{file} {archive_raw_folder}{file}')
     for file in processed_req_files:
-        os.system(f'rm {req_data_folder}{file}')
+        with open(log_file, "a") as f:
+            f.write(f"Move {file} to archive\n")
+        os.system(f'mv {req_data_folder}{file} {archive_req_folder}{file}')
     for file in processed_img_files:
+        with open(log_file, "a") as f:
+            f.write(f"Delete {file}\n")
         os.system(f'rm {img_data_folder}{file}')
     # print(f'files: {current_files}')
 

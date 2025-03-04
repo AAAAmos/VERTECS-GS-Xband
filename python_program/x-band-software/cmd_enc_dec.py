@@ -1,22 +1,25 @@
 import sys
+import datetime
 
 #file_name = 'F20540802065959.bin'
 #id_start = 16000
 #id_end = 19000
 #name = 'IM' #'HK'/'IMG'
 
-
 #######################################################################
 def make_command(file_name,name,id_start,id_end):
     #F20YYMMDDhhmmss
-    YY = int(file_name[3:5] )
-    MM = int(file_name[5:7] )
-    DD = int(file_name[7:9] )
-    hh = int(file_name[9:11] )
+    YY = int(file_name[3:5])
+    MM = int(file_name[5:7])
+    DD = int(file_name[7:9])
+    hh = int(file_name[9:11])
     mm = int(file_name[11:13])
     ss = int(file_name[13:15])
-    out_date = YY.to_bytes(1,'big')+MM.to_bytes(1,'big')\
-        +DD.to_bytes(1,'big')+(ss+60*(mm+60*hh)).to_bytes(3,'big')
+    fname = datetime.datetime(2000+YY,MM,DD,hh,mm,ss)
+    unix_time = int(fname.timestamp())
+    out_date = unix_time.to_bytes(4,'big')
+
+    #UNIX timestamp
 
     if name == 'HK':
         label=0
@@ -45,28 +48,21 @@ def make_command(file_name,name,id_start,id_end):
 
 ######################################################################
 def decode_command(com):
-    #F20YYMMDDhhmmss
-    YY = str(com[0]).zfill(2)
-    MM = str(com[1]).zfill(2)
-    DD = str(com[2]).zfill(2)
-    t = int.from_bytes(com[3:6],'big')
-    ss = t%60
-    mm = int((t-ss)/60)%60
-    hh = int((t-ss-60*mm)/3600)
-
-    file_name = 'F20'+\
-        YY + MM + DD + \
-        str(hh).zfill(2) + str(mm).zfill(2) + str(ss).zfill(2) +\
-            '.dat'
     
-    if com[6] == 0:
+    fname = datetime.datetime.fromtimestamp(int.from_bytes(com[:4],'big'))
+    file_name = 'F'+f'{fname:%Y%m%d%H%M%S}'+'.dat'
+    #UNIX timestamp
+    
+    if com[4] == 0:
         label = 'HK'
-    elif com[6] == 1:
-        label = 'IMG'
+    elif com[4] == 1:
+        label = 'IM'
+    elif com[4] == 2:
+        label = 'OK'
+    elif com[4] == 3:
+        label = 'Error'                
     else:
         label = 'UNKNOWN'
-
-    id_start=int.from_bytes(com[7:9],'big')
-    id_end=int.from_bytes(com[9:11],'big')
-
+    id_start=int.from_bytes(com[5:7],'big')
+    id_end=int.from_bytes(com[7:9],'big')
     return [file_name,label,id_start,id_end]
