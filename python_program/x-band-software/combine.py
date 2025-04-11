@@ -191,6 +191,9 @@ try:
             HK_range = set(range(tmp_data[HK_mask]['PSC'].min(), tmp_data[HK_mask]['PSC'].max()+1)) # if the number of HK is fixed, please change the range 
         except:
             HK_range = set(range(800, 8000))
+            
+        # xxx
+        print(HK_range)
 
         # find the missing/bad-quality packets
         missing_IM = IM_range - set(tmp_data[IM_mask(tmp_data)]['PSC'])

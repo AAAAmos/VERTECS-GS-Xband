@@ -1,0 +1,5 @@
+Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)
+F20250120132129.bin,Error,65535,65535,100
+F20250109155612.bin,OK,0,0,0
+F20250109155526.bin,HK,7023,7179,1.9625
+F20250109155526.bin,OK,0,0,0

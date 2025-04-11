@@ -5,6 +5,7 @@ import pandas as pd
 import sys
 import cmd_enc_dec as myenc
 import numpy as np
+import binascii
 import csv
 
 #NOTFIXED: not fixed part
@@ -17,6 +18,8 @@ def main():
     now = datetime.datetime.now(JST)
 
     #variables
+    # cmd output file name
+    cmd_out = './cmd/'
     #folder where report csv file is in
     folder_decode_out = './report/'
     #number of packets per 1 request file 
@@ -30,9 +33,9 @@ def main():
 
     #folders
     folder_cmd_list = './cmd/list/' 
-    folder_cmd_bin = './cmd/bin/'
+    # folder_cmd_bin = './cmd/bin/'
     folder_cmd_list_cur = folder_cmd_list +  f'{now:%Y%m%d_%H%M%S}' + '/'
-    folder_cmd_bin_cur = folder_cmd_bin +  f'{now:%Y%m%d_%H%M%S}' + '/'
+    # folder_cmd_bin_cur = folder_cmd_bin +  f'{now:%Y%m%d_%H%M%S}' + '/'
     #folder_cmd_list_cur += '/'
     #folder_cmd_bin_cur += '/'
     #NOTFIXED_END
@@ -43,45 +46,62 @@ def main():
     except:
         return 0
     os.makedirs(folder_cmd_list_cur[:-1])
-    os.makedirs(folder_cmd_bin_cur[:-1])
+    # os.makedirs(folder_cmd_bin_cur[:-1])
     command_order(folder_decode_out,folder_cmd_list_cur,N_request,N_id,rate_for_all,total_packet,now)
-    command_bin(folder_cmd_list_cur,folder_cmd_bin_cur)
+    command_bin(folder_cmd_list_cur,cmd_out)
         
-   
 #######################################################################
-def command_bin(folder_list,folder_bin):
+def command_bin(folder_list,folder_cmd):
     #generate command for request
+    
+    # determine the ouptput file name
+    cmd_report = glob.glob('./cmd/*.txt')
+    cmd_report.sort()
+    if len(cmd_report) == 0:
+        dt_now = datetime.datetime.now()
+        time_now = dt_now.strftime('%Y%m%d%H%M%S')
+        fout_name = f'./cmd/cmd_report_0000_{time_now}.txt'
+    else:
+        fout_name = cmd_report[-1]
+        if os.path.getsize(fout_name) > 1e6: # size limit of a report file is ~ 1MB
+            print('The last cmd report file is too large, create a new one.')
+            dt_now = datetime.datetime.now()
+            time_now = dt_now.strftime('%Y%m%d%H%M%S')
+            fout_name = f'./cmd/report_{str(len(cmd_report)).zfill(4)}_{time_now}.txt'
+        else:
+            print(f'Write to the cmd report file: {fout_name}')
+    
+    #############################
+    # generate command for request
     #NOTFIXED_START
     files = glob.glob(folder_list + 'REQ*.csv') #list for request
     #NOTFIXED_END
     files.sort()
-    N_com = 0
+    
     if(len(files)>0):
         for file_name in files:
-            with open(file_name, 'r') as f:
-                list_packet_t = pd.read_csv(file_name).values.tolist()
+            list_packet_t = pd.read_csv(file_name).values.tolist()
             for lists in list_packet_t:
+                print(file_name, list_packet_t)
                 out_cmd_b = myenc.make_command(lists[0],lists[1],lists[2],lists[3])
-                with open(folder_bin + file_name[len(folder_list):-len('.csv')] + '_{0:05}.bin'.format(N_com) , 'wb')\
-                     as f:
-                    f.write(out_cmd_b)
-                    N_com += 1
+                with open(fout_name , 'a') as f:
+                    f.write('cb 96 '+str(binascii.hexlify(out_cmd_b, ' '))[2:-1]+'\n')
 
-    #generate command for delete
+    # generate command for delete
     #NOTFIXED_START                
     files = glob.glob(folder_list + 'DEL*.csv')#list for delete
     #NOTFIXED_END    
     files.sort()
-    N_com = 0
+    
     if(len(files)>0):
         for file_name in files:
-            with open(file_name, 'r') as f:
-                list_packet_t = pd.read_csv(file_name).values.tolist()
+            list_packet_t = pd.read_csv(file_name).values.tolist()
             for lists in list_packet_t:
                 out_cmd_b = myenc.make_command(lists[0],lists[1],0,0) #command for delete file (not fixed yet?)
-                with open(folder_bin + file_name[len(folder_list):-len('.csv')] + '_{0:05}.bin'.format(N_com) , 'wb') \
-                     as f:
-                    f.write(out_cmd_b)
+                with open(fout_name , 'a') as f:
+                    f.write('cb 96 '+str(binascii.hexlify(out_cmd_b, ' '))[2:-1]+'\n')
+                    
+    #############################
 
 #######################################################################
 def command_order(fol_dout,fol_lis,N_req,N_id,rate_for_all,total_packet,now):
@@ -184,7 +204,7 @@ def save_to_csv(folder_name,n_c,data):
     #filename = folder_name + f'{now_t:%Y%m%d%H%M%S}' + '_{0:05}.csv'.format(n_c)
     filename = folder_name + '_{0:05}.csv'.format(n_c)
     with open(filename, mode='w', newline='') as file:
-        file.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+        file.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621),req_rate\n')
         writer = csv.writer(file)
         writer.writerows(data)   
                 
