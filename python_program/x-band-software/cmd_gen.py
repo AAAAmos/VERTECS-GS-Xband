@@ -85,7 +85,9 @@ def command_bin(folder_list,folder_cmd):
                 print(file_name, list_packet_t)
                 out_cmd_b = myenc.make_command(lists[0],lists[1],lists[2],lists[3])
                 with open(fout_name , 'a') as f:
-                    f.write('cb 96 '+str(binascii.hexlify(out_cmd_b, ' '))[2:-1]+'\n')
+                    # f.write('cb 96 '+str(binascii.hexlify(out_cmd_b, ' '))[2:-1]+'\n')
+                    # python version < 3.8
+                    f.write('cb 96 ' + ' '.join(f'{b:02x}' for b in out_cmd_b) + '\n')
 
     # generate command for delete
     #NOTFIXED_START                
@@ -99,7 +101,9 @@ def command_bin(folder_list,folder_cmd):
             for lists in list_packet_t:
                 out_cmd_b = myenc.make_command(lists[0],lists[1],0,0) #command for delete file (not fixed yet?)
                 with open(fout_name , 'a') as f:
-                    f.write('cb 96 '+str(binascii.hexlify(out_cmd_b, ' '))[2:-1]+'\n')
+                    # f.write('cb 96 '+str(binascii.hexlify(out_cmd_b, ' '))[2:-1]+'\n')
+                    # python version < 3.8
+                    f.write('cb 96 ' + ' '.join(f'{b:02x}' for b in out_cmd_b) + '\n')
                     
     #############################
 

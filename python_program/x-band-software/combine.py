@@ -15,6 +15,12 @@ import os
 import sys
 import pandas as pd
 
+import psutil
+def print_memory():
+    process = psutil.Process(os.getpid())
+    mem = process.memory_info().rss / (1024 * 1024)  # Memory in MB
+    print(f"[Memory] {mem:.2f} MB")
+
 def DF_tmp_data(file_name):
     
     '''
@@ -244,6 +250,7 @@ try:
             with open(fout_name_cpl, 'a') as f:
                 f.write(f'{file_name.split("/")[-1][4:]},OK,0,0,0\n')
             os.system(f'rm {file_name}')
+            print_memory()
         else:
             outfile = f'./tmp/{file_name.split("/")[-1]}'
             # store the incomplete image data. replace the original tmp file

@@ -1,7 +1,14 @@
 import sys
+import os
 import numpy as np
 from astropy.io import fits
 import pandas as pd
+
+import psutil
+def print_memory():
+    process = psutil.Process(os.getpid())
+    mem = process.memory_info().rss / (1024 * 1024)  # Memory in MB
+    print(f"[Memory] {mem:.2f} MB")
 
 def DF_tmp_data(file_name):
     
@@ -48,6 +55,8 @@ try:
     image_data = data_array.reshape(3003,3008)
 except Exception as e:
     sys.exit(4)
+    
+print_memory()
 
 #check if the length of data_array is 3003*3008
 # if len(data_array) == 3003*3008: 

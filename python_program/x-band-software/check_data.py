@@ -18,6 +18,12 @@ import datetime
 import numpy as np
 import pandas as pd
 
+import psutil
+def print_memory():
+    process = psutil.Process(os.getpid())
+    mem = process.memory_info().rss / (1024 * 1024)  # Memory in MB
+    print(f"[Memory] {mem:.2f} MB")
+
 def find_consecutive_ranges(lst):
     
     '''
@@ -272,6 +278,7 @@ try:
             # output the report
             with open(fout_name_cpl, 'a') as f:
                 f.write(f'{file_name.split("/")[-1]},OK,0,0,0\n')
+            print_memory()
         else:
             outfile = f'./tmp/tmp_{file_name.split("/")[-1]}'
             # store the incomplete image data

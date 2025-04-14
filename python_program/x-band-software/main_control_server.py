@@ -3,6 +3,13 @@ import datetime
 import os 
 import subprocess
 import glob
+import sys
+
+# import numpy as np
+# import pandas as pd
+# import binascii
+# import csv
+# from astropy.io import fits
 
 # memory test
 import psutil
@@ -32,7 +39,11 @@ os.makedirs(archive_req_folder, exist_ok=True)
 time_now = datetime.datetime.now().strftime('%Y%m%d%H%M%S')
 nfiles = len(glob.glob(log_folder + "*.log"))
 log_file = log_folder + f"log_{nfiles}_{time_now}.log"
-os.system(f"touch {log_file}")
+
+# os.system cannot be used in the server
+# os.system(f"touch {log_file}")
+subprocess.run(['touch', log_file])
+
 
 fout_name_cpl = './report/final_check.csv'
 with open(fout_name_cpl, 'w') as f:
@@ -43,7 +54,6 @@ with open(final_report, 'w') as f:
 
 while True:
     
-    # test memory
     print_memory()
     
     processed_raw_files = set()
@@ -73,9 +83,6 @@ while True:
             f.write(f"Checking {file}\n")
         try:
             subprocess.run(["python3", "./check_data.py", file_path], check=True)
-            # test memory
-            print_memory()
-            
             with open(log_file, "a") as f:
                 f.write(f"Finish checking {file}\n")
             processed_raw_files.add(file)
@@ -83,13 +90,19 @@ while True:
             with open(log_file, "a") as f:
                 f.write(f"Error for checking {file_path}: {e}\n")
                 f.write(f"Delete {file}, request again.\n")
-            os.system(f'rm {raw_data_folder}{file}')
+            # os.system(f'rm {raw_data_folder}{file}')
+            subprocess.run(['rm', file_path])
             continue
             
+    print_memory()
+    
     # call cmd_gen.py
-    os.system(
-        f"python3 ./cmd_gen.py"
-    )
+    # os.system(
+    #     f"python3 ./cmd_gen.py"
+    # )
+    subprocess.run(['python3', './cmd_gen.py'])
+    
+    print_memory()
     
     for file in sorted(new_req_files):  # Process in order
         file_path = os.path.join(req_data_folder, file)
@@ -104,8 +117,11 @@ while True:
             with open(log_file, "a") as f:
                 f.write(f"Error for extracting {file_path}: {e}\n")
                 f.write(f"Delete {file}.\n")
-            os.system(f'rm {new_req_files}{file}')
+            # os.system(f'rm {new_req_files}{file}')
+            subprocess.run(['rm', file_path])
             continue
+    
+    print_memory()
         
     for file in sorted(new_img_files):  # Process in order, file = opt_frame_n_Fxxx.bin
         file_path = os.path.join(img_data_folder, file)
@@ -151,23 +167,31 @@ while True:
             
             with open(log_file, "a") as f:
                 f.write(f"Delete {file}, request again.\n")
-            os.system(f'rm {img_data_folder}{file}')
+            # os.system(f'rm {img_data_folder}{file}')
+            subprocess.run(['rm', file_path])
                 
             continue
 
     time.sleep(3)  # Check for new files every x seconds
     
+    print_memory()
+    
     for file in processed_raw_files:
         with open(log_file, "a") as f:
             f.write(f"Move {file} to archive\n")
-        os.system(f'mv {raw_data_folder}{file} {archive_raw_folder}{file}')
+        # os.system(f'mv {raw_data_folder}{file} {archive_raw_folder}{file}')
+        subprocess.run(['mv', f'{raw_data_folder}{file}', f'{archive_raw_folder}{file}'])
     for file in processed_req_files:
         with open(log_file, "a") as f:
             f.write(f"Move {file} to archive\n")
-        os.system(f'mv {req_data_folder}{file} {archive_req_folder}{file}')
+        # os.system(f'mv {req_data_folder}{file} {archive_req_folder}{file}')
+        subprocess.run(['mv', f'{req_data_folder}{file}', f'{archive_req_folder}{file}'])
     for file in processed_img_files:
         with open(log_file, "a") as f:
             f.write(f"Delete {file}\n")
-        os.system(f'rm {img_data_folder}{file}')
+        # os.system(f'rm {img_data_folder}{file}')
+        subprocess.run(['rm', f'{img_data_folder}{file}'])
     # print(f'files: {current_files}')
+    
+    print_memory()
 
