@@ -1,12 +1,10 @@
 '''
 This script reads the raw data, checks completeness of the data, and the data quality.
 ------Parameters------
-1. file_name: the name of the raw data file to be checked (full path). 
+file_name: the name of the raw data file to be checked (full path). 
     If no input, the last file in the raw_data folder will be checked.
-2. mode: "detail" or no input for normal mode
 ------Output------
-1. If mode is "detail", the script will output a txt file that contains the header information of the packets.
-2. If mode is "normal", the script will write the report to the last report file (.csv) in the report folder.:
+This script will write the report to the last report file (.csv) in the report folder.:
     - If there is no missing image packets, the script will save the image data to the optical folder.
     - If there are missing image packets, the script will store the incomplete image data to the tmp folder.
 '''
@@ -150,50 +148,23 @@ with open(file_name, 'rb') as f:
     mpduPackets = f.read().split(b'\x1A\xCF\xFC\x1D')[1:]
 
 # create a output file if needed
-if (len(sys.argv)>2) and (sys.argv[2] == "detail"):
-    # output file that contains the header information of the packets
-    fout_name = f'./{file_name.split("/")[-1]}'
-    fout_name = fout_name.replace('.bin', '_header.txt')
-    print(f'Detail output: {fout_name}')
-    fout = open(fout_name, 'w')
+# determine report file
+if os.path.isfile('./report/un_gen.csv'):
+    fout_name_incpl = './report/un_gen.csv'
 else:
-    # print(f'Raw data file: {file_name}')
-    # determine normal mode report file
-    if os.path.isfile('./report/un_gen.csv'):
-        fout_name_incpl = './report/un_gen.csv'
-    else:
-        fout_name_incpl = './report/un_gen.csv'
-        with open(fout_name_incpl, 'w') as f:
-            f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-    print(f'Report file: {fout_name_incpl}')
-    if os.path.isfile('./report/final_check.csv'):
-        fout_name_cpl = './report/final_check.csv'
-    else:
-        fout_name_cpl = './report/final_check.csv'
-        with open(fout_name_cpl, 'w') as f:
-            f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-    print(f'Report file: {fout_name_cpl}')
-    # print(f'Report file: {fout_name}')
-    
-    # if len(reports) == 0:
-    #     dt_now = datetime.datetime.now()
-    #     # https://docs.python.org/3/library/datetime.html#strftime-strptime-behavior
-    #     time_now = dt_now.strftime('%Y%m%d%H%M%S')
-    #     print('No report file found, create a new one.')
-    #     fout_name = f'{report_path}report_0000_{time_now}.csv'
-    #     with open(fout_name, 'w') as f:
-    #         f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-    # else:
-    #     fout_name = reports[-1]
-    #     if os.path.getsize(fout_name) > 1e7: # size limit of a report file is ~ 10MB
-    #         print('The last report file is too large, create a new one.')
-    #         dt_now = datetime.datetime.now()
-    #         time_now = dt_now.strftime('%Y%m%d%H%M%S')
-    #         fout_name = f'{report_path}report_{str(len(reports)).zfill(4)}_{time_now}.csv'
-    #         with open(fout_name, 'w') as f:
-    #             f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
-    #     else:
-    #         print(f'Write to the last report file: {fout_name}')
+    fout_name_incpl = './report/un_gen.csv'
+    with open(fout_name_incpl, 'w') as f:
+        f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+print(f'Report file: {fout_name_incpl}')
+if os.path.isfile('./report/final_check.csv'):
+    fout_name_cpl = './report/final_check.csv'
+else:
+    fout_name_cpl = './report/final_check.csv'
+    with open(fout_name_cpl, 'w') as f:
+        f.write('Filename,Type,Start_Packet_number,End_Packet_number,Incompleteness(100*missing/16621)\n')
+print(f'Report file: {fout_name_cpl}')
+# print(f'Report file: {fout_name}')
+
             
 headers = [[], [], [], []]
 hk = []
