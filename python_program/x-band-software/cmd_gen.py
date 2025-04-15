@@ -5,7 +5,7 @@ import pandas as pd
 import sys
 import cmd_enc_dec as myenc
 import numpy as np
-import binascii
+# import binascii
 import csv
 
 #NOTFIXED: not fixed part
@@ -25,7 +25,7 @@ def main():
     #number of packets per 1 request file 
     N_request = 16621
     #upper limit of requested packet segments per single raw file    
-    N_id =  10 
+    N_id =  5 
     #number of packet per 1 raw data (used to calculate rate) 
     total_packet = 16621    
     #if the fraction of requested packets is larger than this, all data is requested
@@ -33,18 +33,16 @@ def main():
 
     #folders
     folder_cmd_list = './cmd/list/' 
-    # folder_cmd_bin = './cmd/bin/'
     folder_cmd_list_cur = folder_cmd_list +  f'{now:%Y%m%d_%H%M%S}' + '/'
-    # folder_cmd_bin_cur = folder_cmd_bin +  f'{now:%Y%m%d_%H%M%S}' + '/'
-    #folder_cmd_list_cur += '/'
-    #folder_cmd_bin_cur += '/'
     #NOTFIXED_END
 
     file_name = folder_decode_out + 'un_gen.csv'
     try:
         list_packet_t = pd.read_csv(file_name).values.tolist() #csv /w header
     except:
+        # Not triggered if no un_gen.csv file (no new data)
         return 0
+    
     os.makedirs(folder_cmd_list_cur[:-1])
     # os.makedirs(folder_cmd_bin_cur[:-1])
     command_order(folder_decode_out,folder_cmd_list_cur,N_request,N_id,rate_for_all,total_packet,now)
@@ -82,7 +80,7 @@ def command_bin(folder_list,folder_cmd):
         for file_name in files:
             list_packet_t = pd.read_csv(file_name).values.tolist()
             for lists in list_packet_t:
-                print(file_name, list_packet_t)
+                # print(file_name, list_packet_t) # xxx
                 out_cmd_b = myenc.make_command(lists[0],lists[1],lists[2],lists[3])
                 with open(fout_name , 'a') as f:
                     # f.write('cb 96 '+str(binascii.hexlify(out_cmd_b, ' '))[2:-1]+'\n')
