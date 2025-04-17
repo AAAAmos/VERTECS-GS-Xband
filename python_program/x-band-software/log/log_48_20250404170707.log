@@ -1,3 +1,0 @@
-Checking F20250120132129.bin
-Error for checking ./raw_data/F20250120132129.bin: Command '['python3', './check_data.py', './raw_data/F20250120132129.bin']' returned non-zero exit status 1.
-Delete F20250120132129.bin, request again.

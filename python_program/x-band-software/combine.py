@@ -12,14 +12,15 @@ It reads the RMP files, identifies which ICs they belong to, and merges them wit
 
 import glob
 import os
+import subprocess
 import sys
 import pandas as pd
 
-import psutil
-def print_memory():
-    process = psutil.Process(os.getpid())
-    mem = process.memory_info().rss / (1024 * 1024)  # Memory in MB
-    print(f"[Memory] {mem:.2f} MB")
+# import psutil
+# def print_memory():
+#     process = psutil.Process(os.getpid())
+#     mem = process.memory_info().rss / (1024 * 1024)  # Memory in MB
+#     print(f"[Memory] {mem:.2f} MB")
 
 def DF_tmp_data(file_name):
     
@@ -198,8 +199,7 @@ try:
         except:
             HK_range = set(range(800, 8000))
             
-        # xxx
-        print(HK_range)
+        # print(HK_range) # xxx
 
         # find the missing/bad-quality packets
         missing_IM = IM_range - set(tmp_data[IM_mask(tmp_data)]['PSC'])
@@ -249,8 +249,8 @@ try:
             # output the report
             with open(fout_name_cpl, 'a') as f:
                 f.write(f'{file_name.split("/")[-1][4:]},OK,0,0,0\n')
-            os.system(f'rm {file_name}')
-            print_memory()
+            subprocess.run(['rm', file_name])
+            # print_memory()
         else:
             outfile = f'./tmp/{file_name.split("/")[-1]}'
             # store the incomplete image data. replace the original tmp file

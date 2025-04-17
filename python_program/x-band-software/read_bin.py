@@ -1,14 +1,14 @@
 import sys
-import os
 import numpy as np
 from astropy.io import fits
 import pandas as pd
 
-import psutil
-def print_memory():
-    process = psutil.Process(os.getpid())
-    mem = process.memory_info().rss / (1024 * 1024)  # Memory in MB
-    print(f"[Memory] {mem:.2f} MB")
+# import os
+# import psutil
+# def print_memory():
+#     process = psutil.Process(os.getpid())
+#     mem = process.memory_info().rss / (1024 * 1024)  # Memory in MB
+#     print(f"[Memory] {mem:.2f} MB")
 
 def DF_tmp_data(file_name):
     
@@ -56,7 +56,7 @@ try:
 except Exception as e:
     sys.exit(4)
     
-print_memory()
+# print_memory()
 
 #check if the length of data_array is 3003*3008
 # if len(data_array) == 3003*3008: 
@@ -89,6 +89,6 @@ hdu.header['header3'] = header_S[2]
 file_name = file_name.split('/')[-1].split('.')[0]
 #add the header information
 
-#if filename isn't a empty string
+#if filename isn't an empty string
 if file_name != "":
     hdu.writeto(f'./img/{file_name.split("_")[-1]}_test.fits', overwrite=True)
